@@ -22,8 +22,8 @@ do_state_tasks <- function(oldest_active_sites, ...) {
     add_complete = FALSE)
 
   create_task_makefile(
-    task_plan,
-    '123_state_tasks.yml',
+    task_plan = task_plan,
+    makefile = '123_state_tasks.yml',
     include = c('remake.yml'),
     packages = c('tidyverse', 'dataRetrieval'),
     sources = c('1_fetch/src/get_site_data.R'),
