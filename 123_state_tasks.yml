@@ -31,30 +31,30 @@ targets:
   # --- WI --- #
   
   WI_data:
-    command: get_site_data(I('1_fetch/tmp/inventory_WI.tsv'), parameter)
+    command: get_site_data('1_fetch/tmp/inventory_WI.tsv', parameter)
 
   # --- MN --- #
   
   MN_data:
-    command: get_site_data(I('1_fetch/tmp/inventory_MN.tsv'), parameter)
+    command: get_site_data('1_fetch/tmp/inventory_MN.tsv', parameter)
 
   # --- MI --- #
   
   MI_data:
-    command: get_site_data(I('1_fetch/tmp/inventory_MI.tsv'), parameter)
+    command: get_site_data('1_fetch/tmp/inventory_MI.tsv', parameter)
 
   # --- IL --- #
   
   IL_data:
-    command: get_site_data(I('1_fetch/tmp/inventory_IL.tsv'), parameter)
+    command: get_site_data('1_fetch/tmp/inventory_IL.tsv', parameter)
 
   # --- IN --- #
   
   IN_data:
-    command: get_site_data(I('1_fetch/tmp/inventory_IN.tsv'), parameter)
+    command: get_site_data('1_fetch/tmp/inventory_IN.tsv', parameter)
 
   # --- IA --- #
   
   IA_data:
-    command: get_site_data(I('1_fetch/tmp/inventory_IA.tsv'), parameter)
+    command: get_site_data('1_fetch/tmp/inventory_IA.tsv', parameter)
 
