@@ -1,4 +1,5 @@
 do_state_tasks <- function(oldest_active_sites, ...) {
+  split_inventory(sites_info=oldest_active_sites)
 
   # Define task table rows
   state_codes = oldest_active_sites$state_cd
@@ -11,7 +12,7 @@ do_state_tasks <- function(oldest_active_sites, ...) {
     },
     #command = 'get_site_data(oldest_active_sites, target_name, parameter)'
     command = function(task_name, ...){
-        sprintf("get_site_data(oldest_active_sites, I('%s'), parameter)", task_name)
+        sprintf("get_site_data('1_fetch/tmp/inventory_%s.tsv', parameter)", task_name)
     }
   )
 
@@ -34,4 +35,31 @@ do_state_tasks <- function(oldest_active_sites, ...) {
   scmake(remake_file='123_state_tasks.yml')
   return()
 
+}
+
+write_individual_tmp_files <- function(
+    sites_info){
+    tmpdir = '1_fetch/tmp'
+    if(!dir.exists(tmpdir)) dir.create(tmpdir)
+
+    state_files <- c()
+    for(i in 1:nrow(sites_info)){
+        row <- sites_info[i, ]
+        filename <- sprintf("inventory_%s.tsv", row$state_cd)
+        file_path = file.path(tmpdir, filename)
+        readr::write_tsv(row, file_path)
+        # collect the file names
+        state_files <- c(state_files, file_path)
+    }
+    state_files <- sort(state_files)
+    return(state_files)
+}
+
+
+split_inventory <- function(
+    summary_file='1_fetch/tmp/state_splits.yml',
+    sites_info=oldest_active_sites){
+
+    state_files = write_individual_tmp_files(sites_info)
+    scipiper::sc_indicate(ind_file = summary_file, data_file = state_files)
 }
