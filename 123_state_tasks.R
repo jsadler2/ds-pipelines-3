@@ -12,7 +12,7 @@ do_state_tasks <- function(oldest_active_sites, ...) {
     },
     #command = 'get_site_data(oldest_active_sites, target_name, parameter)'
     command = function(task_name, ...){
-        sprintf("get_site_data(I('1_fetch/tmp/inventory_%s.tsv'), parameter)", task_name)
+        sprintf("get_site_data('1_fetch/tmp/inventory_%s.tsv', parameter)", task_name)
     }
   )
 
