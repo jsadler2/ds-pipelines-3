@@ -10,24 +10,44 @@ do_state_tasks <- function(oldest_active_sites, ...) {
     target_name = function(task_name, step_name, ...){
         sprintf('%s_data', task_name)
     },
-    #command = 'get_site_data(oldest_active_sites, target_name, parameter)'
     command = function(task_name, ...){
         sprintf("get_site_data('1_fetch/tmp/inventory_%s.tsv', parameter)", task_name)
     }
   )
 
+  plot_step <- create_task_step(
+    step_name = 'plot',
+    target_name = function(task_name, ...){
+        sprintf('3_visualize/out/timeseries_%s.png', task_name)
+    },
+    command = function(steps, ...){
+        sprintf("plot_site_data(out_file = target_name, site_data = %s, parameter)", steps[['download']]$target_name)
+    }
+  )
+
+  tally_step <- create_task_step(
+    step_name = 'tally',
+    target_name = function(task_name, ...){
+        sprintf('%s_tally', task_name)
+    },
+    command = function(steps, ...){
+        sprintf("tally_site_obs(site_data = %s)", steps[['download']]$target_name)
+    }
+  )
+
+
   # create the task plan
   task_plan <- create_task_plan(
     task_names = state_codes,
-    task_steps = list(download_step),
+    task_steps = list(download_step, tally_step, plot_step),
     add_complete = FALSE)
 
   create_task_makefile(
     task_plan = task_plan,
     makefile = '123_state_tasks.yml',
     include = c('remake.yml'),
-    packages = c('tidyverse', 'dataRetrieval'),
-    sources = c('1_fetch/src/get_site_data.R'),
+    packages = c('tidyverse', 'dataRetrieval', 'lubridate'),
+    sources = c(...),
     tickquote_combinee_objects = FALSE,
     finalize_funs = c())
 

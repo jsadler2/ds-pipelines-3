@@ -11,9 +11,12 @@ include:
 packages:
   - tidyverse
   - dataRetrieval
+  - lubridate
 
 sources:
   - 1_fetch/src/get_site_data.R
+  - 2_process/src/tally_site_obs.R
+  - 3_visualize/src/plot_site_data.R
 
 file_extensions:
   - "ind"
@@ -22,39 +25,87 @@ targets:
   123_state_tasks:
     depends:
       - WI_data
+      - WI_tally
+      - '3_visualize/out/timeseries_WI.png'
       - MN_data
+      - MN_tally
+      - '3_visualize/out/timeseries_MN.png'
       - MI_data
+      - MI_tally
+      - '3_visualize/out/timeseries_MI.png'
       - IL_data
+      - IL_tally
+      - '3_visualize/out/timeseries_IL.png'
       - IN_data
+      - IN_tally
+      - '3_visualize/out/timeseries_IN.png'
       - IA_data
+      - IA_tally
+      - '3_visualize/out/timeseries_IA.png'
 
   # --- WI --- #
   
   WI_data:
     command: get_site_data('1_fetch/tmp/inventory_WI.tsv', parameter)
 
+  WI_tally:
+    command: tally_site_obs(site_data = WI_data)
+
+  3_visualize/out/timeseries_WI.png:
+    command: plot_site_data(out_file = target_name, site_data = WI_data, parameter)
+
   # --- MN --- #
   
   MN_data:
     command: get_site_data('1_fetch/tmp/inventory_MN.tsv', parameter)
+
+  MN_tally:
+    command: tally_site_obs(site_data = MN_data)
+
+  3_visualize/out/timeseries_MN.png:
+    command: plot_site_data(out_file = target_name, site_data = MN_data, parameter)
 
   # --- MI --- #
   
   MI_data:
     command: get_site_data('1_fetch/tmp/inventory_MI.tsv', parameter)
 
+  MI_tally:
+    command: tally_site_obs(site_data = MI_data)
+
+  3_visualize/out/timeseries_MI.png:
+    command: plot_site_data(out_file = target_name, site_data = MI_data, parameter)
+
   # --- IL --- #
   
   IL_data:
     command: get_site_data('1_fetch/tmp/inventory_IL.tsv', parameter)
+
+  IL_tally:
+    command: tally_site_obs(site_data = IL_data)
+
+  3_visualize/out/timeseries_IL.png:
+    command: plot_site_data(out_file = target_name, site_data = IL_data, parameter)
 
   # --- IN --- #
   
   IN_data:
     command: get_site_data('1_fetch/tmp/inventory_IN.tsv', parameter)
 
+  IN_tally:
+    command: tally_site_obs(site_data = IN_data)
+
+  3_visualize/out/timeseries_IN.png:
+    command: plot_site_data(out_file = target_name, site_data = IN_data, parameter)
+
   # --- IA --- #
   
   IA_data:
     command: get_site_data('1_fetch/tmp/inventory_IA.tsv', parameter)
+
+  IA_tally:
+    command: tally_site_obs(site_data = IA_data)
+
+  3_visualize/out/timeseries_IA.png:
+    command: plot_site_data(out_file = target_name, site_data = IA_data, parameter)
 
