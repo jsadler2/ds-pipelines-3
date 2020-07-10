@@ -40,6 +40,7 @@ do_state_tasks <- function(oldest_active_sites, ...) {
   task_plan <- create_task_plan(
     task_names = state_codes,
     task_steps = list(download_step, tally_step, plot_step),
+    final_step = c('tally', 'plot'),
     add_complete = FALSE)
 
   create_task_makefile(
@@ -48,12 +49,21 @@ do_state_tasks <- function(oldest_active_sites, ...) {
     include = c('remake.yml'),
     packages = c('tidyverse', 'dataRetrieval', 'lubridate'),
     sources = c(...),
-    tickquote_combinee_objects = FALSE,
-    finalize_funs = c())
+    as_promises = TRUE,
+    finalize_funs = c('combine_obs_tallies', 'summarize_timeseries_plots'),
+    final_targets = c('obs_tallies', '3_visualize/out/timeseries_plots.yml'),
+    tickquote_combinee_objects = TRUE)
 
-    # Return nothing to the parent remake file
-  scmake(remake_file='123_state_tasks.yml')
-  return()
+  # Build the tasks
+  obs_tallies <- scmake('obs_tallies_promise', remake_file = '123_state_tasks.yml')
+  scmake('timeseries_plots.yml_promise', remake_file = '123_state_tasks.yml')
+
+  timeseries_plots_info <- yaml::yaml.load_file('3_visualize/out/timeseries_plots.yml') %>%
+  tibble::enframe(name = 'filename', value = 'hash') %>%
+  mutate(hash = purrr::map_chr(hash, `[[`, 1))
+
+  # return the combined tallies
+  return(list(obs_tallies=obs_tallies, timeseries_plots_info=timeseries_plots_info))
 
 }
 
@@ -82,4 +92,21 @@ split_inventory <- function(
 
     state_files = write_individual_tmp_files(sites_info)
     scipiper::sc_indicate(ind_file = summary_file, data_file = state_files)
+}
+
+combine_obs_tallies <- function(...){
+    # filter to just those arguments that are tibbles (because the only step
+    # outputs that are tibbles are the tallies)
+    dots <- list(...)
+    tally_dots <- dots[purrr::map_lgl(dots, is_tibble)]
+    combined = bind_rows(tally_dots)
+    return(combined)
+}
+
+summarize_timeseries_plots <- function(ind_file, ...){
+    # filter to just those arguments that are character strings (because the only
+    # step outputs that are characters are the plot filenames)
+    dots <- list(...)
+    plot_dots <- dots[purrr::map_lgl(dots, is.character)]
+    do.call(combine_to_ind, c(list(ind_file), plot_dots))
 }

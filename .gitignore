@@ -4,3 +4,5 @@
 .Ruserdata
 1_fetch/tmp/*
 !1_fetch/tmp/state_splits.yml
+*.png
+*.html
